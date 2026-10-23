@@ -2,18 +2,28 @@
 class Solution:
     def countAnagrams(self, s):
         MOD = 10**9 + 7
+        n = len(s)
+        fact = [1] * (n + 1)
+
+        for i in range(1, n + 1):
+            fact[i] = fact[i - 1] * i % MOD
+
+        inv = [1] * (n + 1)
+        inv[n] = pow(fact[n], MOD - 2, MOD)
+
+        for i in range(n, 0, -1):
+            inv[i - 1] = inv[i] * i % MOD
+
         ans = 1
 
         for word in s.split():
-            fact = 1
-            for i in range(2, len(word) + 1):
-                fact = fact * i % MOD
+            ans = ans * fact[len(word)] % MOD
 
-            for c in set(word):
-                count = word.count(c)
-                for i in range(2, count + 1):
-                    fact = fact * pow(i, MOD - 2, MOD) % MOD
+            count = [0] * 26
+            for c in word:
+                count[ord(c) - 97] += 1
 
-            ans = ans * fact % MOD
+            for c in count:
+                ans = ans * inv[c] % MOD
 
         return ans
